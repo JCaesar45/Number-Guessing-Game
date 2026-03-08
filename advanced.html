@@ -1,0 +1,720 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS | Quantum Number Intelligence</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700;800&family=Syncopate:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff00ff;
+      --neon-purple: #bf00ff;
+      --dark-bg: #050508;
+      --glass: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--dark-bg);
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #quantum-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .nexus-container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .glitch-title {
+      font-family: 'Syncopate', sans-serif;
+      font-size: clamp(2rem, 8vw, 5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      position: relative;
+      margin-bottom: 0.5rem;
+      text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan);
+      animation: titlePulse 4s ease-in-out infinite;
+    }
+
+    @keyframes titlePulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--neon-pink);
+      letter-spacing: 0.5em;
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+    }
+
+    .quantum-ring {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-svg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      animation: rotate 20s linear infinite;
+    }
+
+    .ring-svg-reverse {
+      animation: rotate 15s linear infinite reverse;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .game-core {
+      position: relative;
+      z-index: 20;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 20px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow:
+        0 0 60px rgba(0, 243, 255, 0.1),
+        inset 0 0 60px rgba(0, 243, 255, 0.05);
+    }
+
+    .input-field {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .input-field input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+      padding: 1rem 0;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-field label {
+      position: absolute;
+      left: 0;
+      top: 1rem;
+      color: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .input-field input:focus~label,
+    .input-field input:valid~label {
+      top: -0.5rem;
+      font-size: 0.8rem;
+      color: var(--neon-cyan);
+    }
+
+    .input-field input:focus {
+      border-bottom-color: var(--neon-cyan);
+      box-shadow: 0 2px 10px rgba(0, 243, 255, 0.3);
+    }
+
+    .cyber-btn {
+      position: relative;
+      width: 100%;
+      padding: 1.2rem;
+      background: transparent;
+      border: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .cyber-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .cyber-btn:hover::before {
+      left: 100%;
+    }
+
+    .cyber-btn:hover {
+      background: var(--neon-cyan);
+      color: var(--dark-bg);
+      box-shadow: 0 0 30px var(--neon-cyan);
+    }
+
+    .status-display {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-left: 3px solid var(--neon-purple);
+      background: rgba(191, 0, 255, 0.05);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      min-height: 100px;
+    }
+
+    .status-line {
+      display: block;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: typeIn 0.5s ease forwards;
+    }
+
+    @keyframes typeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .guess-counter {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      font-size: 0.8rem;
+      color: var(--neon-pink);
+    }
+
+    .range-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+      width: 0%;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .shake {
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-10px);
+      }
+
+      75% {
+        transform: translateX(10px);
+      }
+    }
+
+    .victory-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 5, 8, 0.95);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .victory-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .victory-text {
+      font-family: 'Syncopate', sans-serif;
+      font-size: 3rem;
+      color: var(--neon-cyan);
+      text-align: center;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 30px var(--neon-cyan);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 1.5rem;
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      background: var(--glass);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      color: var(--neon-cyan);
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
+    }
+
+    .hint-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    @media (max-width: 600px) {
+      .quantum-ring {
+        width: 300px;
+        height: 300px;
+      }
+
+      .game-core {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="quantum-canvas"></canvas>
+
+  <div class="nexus-container">
+    <h1 class="glitch-title">NEXUS</h1>
+    <p class="subtitle">Quantum Number Intelligence</p>
+
+    <div class="quantum-ring">
+      <svg class="ring-svg" viewBox="0 0 400 400">
+        <circle cx="200" cy="200" r="180" fill="none" stroke="rgba(0,243,255,0.2)" stroke-width="1" stroke-dasharray="10 5" />
+        <circle cx="200" cy="200" r="160" fill="none" stroke="rgba(255,0,255,0.15)" stroke-width="1" />
+      </svg>
+      <svg class="ring-svg ring-svg-reverse" viewBox="0 0 400 400">
+        <circle cx="200" cy="200" r="140" fill="none" stroke="rgba(191,0,255,0.2)" stroke-width="2" stroke-dasharray="20 10" />
+      </svg>
+
+      <div class="game-core">
+        <div class="guess-counter hidden" id="guessCounter">ATTEMPTS: <span id="attemptCount">0</span></div>
+
+        <div id="usernameSection">
+          <div class="input-field">
+            <input type="text" id="usernameInput" required maxlength="22" autocomplete="off">
+            <label>ENTER DESIGNATION</label>
+          </div>
+          <button class="cyber-btn" onclick="initSession()">INITIALIZE</button>
+        </div>
+
+        <div id="gameSection" class="hidden">
+          <div class="input-field">
+            <input type="number" id="guessInput" required min="1" max="1000" autocomplete="off">
+            <label>INPUT QUANTUM VALUE (1-1000)</label>
+          </div>
+          <div class="range-indicator">
+            <span>MIN: 001</span>
+            <span>MAX: 1000</span>
+          </div>
+          <button class="cyber-btn" onclick="processGuess()">TRANSMIT</button>
+        </div>
+
+        <div class="status-display" id="statusDisplay">
+          <span class="status-line">SYSTEM READY. AWAITING USER INPUT...</span>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="victory-overlay" id="victoryOverlay">
+    <div class="victory-text">QUANTUM<br>LOCK BROKEN</div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-value" id="finalAttempts">0</div>
+        <div class="stat-label">Attempts</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="finalBest">0</div>
+        <div class="stat-label">Best Run</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="finalTotal">0</div>
+        <div class="stat-label">Total Games</div>
+      </div>
+    </div>
+    <button class="cyber-btn" onclick="resetSystem()" style="width: auto; padding: 1rem 3rem;">REBOOT SYSTEM</button>
+  </div>
+
+  <div class="hint-particles" id="particleContainer"></div>
+
+  <script>
+    const canvas = document.getElementById('quantum-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    let mouseX = 0,
+      mouseY = 0;
+    let targetX = 0,
+      targetY = 0;
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.size = Math.random() * 2 + 1;
+        this.life = Math.random() * 100 + 100;
+        this.maxLife = this.life;
+        this.hue = Math.random() * 60 + 180;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        let dx = targetX - this.x;
+        let dy = targetY - this.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 200) {
+          this.vx -= dx * 0.0001;
+          this.vy -= dy * 0.0001;
+        }
+        this.life--;
+        if (this.life <= 0 || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+          this.reset();
+        }
+      }
+      draw() {
+        let alpha = (this.life / this.maxLife) * 0.5;
+        ctx.fillStyle = `hsla(${this.hue}, 100%, 50%, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    for (let i = 0; i < 150; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.1)';
+      ctx.fillRect(0, 0, width, height);
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      ctx.strokeStyle = 'rgba(0, 243, 255, 0.1)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          let dx = particles[i].x - particles[j].x;
+          let dy = particles[i].y - particles[j].y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+    let gameState = {
+      username: '',
+      secretNumber: 0,
+      attempts: 0,
+      bestScore: 0,
+      totalGames: 0,
+      history: []
+    };
+    const db = {
+      users: JSON.parse(localStorage.getItem('nexus_users') || '{}'),
+      getUser(name) {
+        return this.users[name] || null;
+      },
+      saveUser(name, data) {
+        this.users[name] = data;
+        localStorage.setItem('nexus_users', JSON.stringify(this.users));
+      }
+    };
+
+    function logStatus(message, type = 'info') {
+      const display = document.getElementById('statusDisplay');
+      const line = document.createElement('span');
+      line.className = 'status-line';
+      let prefix = '>';
+      let color = '#fff';
+      if (type === 'error') {
+        prefix = '✗';
+        color = '#ff0066';
+      } else if (type === 'success') {
+        prefix = '✓';
+        color = '#00ff99';
+      } else if (type === 'warning') {
+        prefix = '!';
+        color = '#ffcc00';
+      }
+      line.style.color = color;
+      line.textContent = `${prefix} ${message}`;
+      display.appendChild(line);
+      display.scrollTop = display.scrollHeight;
+      if (display.children.length > 6) {
+        display.removeChild(display.firstChild);
+      }
+    }
+
+    function initSession() {
+      const input = document.getElementById('usernameInput');
+      const username = input.value.trim().substring(0, 22);
+      if (!username) {
+        logStatus('ERROR: DESIGNATION REQUIRED', 'error');
+        input.parentElement.classList.add('shake');
+        setTimeout(() => input.parentElement.classList.remove('shake'), 500);
+        return;
+      }
+      gameState.username = username;
+      const userData = db.getUser(username);
+      if (userData) {
+        gameState.totalGames = userData.games;
+        gameState.bestScore = userData.best;
+        logStatus(`WELCOME BACK, ${username.toUpperCase()}`, 'success');
+        logStatus(`GAMES PLAYED: ${userData.games} | BEST: ${userData.best} ATTEMPTS`);
+      } else {
+        logStatus(`NEW USER REGISTERED: ${username.toUpperCase()}`, 'success');
+        logStatus('INITIALIZING NEURAL LINK...');
+      }
+      document.getElementById('usernameSection').classList.add('hidden');
+      document.getElementById('gameSection').classList.remove('hidden');
+      document.getElementById('guessCounter').classList.remove('hidden');
+      startNewGame();
+    }
+
+    function startNewGame() {
+      gameState.secretNumber = Math.floor(Math.random() * 1000) + 1;
+      gameState.attempts = 0;
+      gameState.history = [];
+      document.getElementById('attemptCount').textContent = '0';
+      document.getElementById('progressFill').style.width = '0%';
+      document.getElementById('guessInput').value = '';
+      logStatus('QUANTUM ENCRYPTION ACTIVE. RANGE: 1-1000');
+      logStatus('AWAITING FIRST GUESS...');
+    }
+
+    function processGuess() {
+      const input = document.getElementById('guessInput');
+      const guess = parseInt(input.value);
+      if (isNaN(guess) || guess < 1 || guess > 1000) {
+        logStatus('INVALID INPUT. INTEGER REQUIRED (1-1000)', 'error');
+        input.parentElement.classList.add('shake');
+        setTimeout(() => input.parentElement.classList.remove('shake'), 500);
+        input.value = '';
+        return;
+      }
+      gameState.attempts++;
+      document.getElementById('attemptCount').textContent = gameState.attempts;
+      let progress = Math.min((gameState.attempts / 10) * 100, 100);
+      document.getElementById('progressFill').style.width = progress + '%';
+      if (guess === gameState.secretNumber) {
+        handleVictory();
+      } else if (guess > gameState.secretNumber) {
+        logStatus(`GUESS ${guess}: TARGET LOWER`, 'warning');
+        createParticles('lower');
+      } else {
+        logStatus(`GUESS ${guess}: TARGET HIGHER`, 'warning');
+        createParticles('higher');
+      }
+      input.value = '';
+      input.focus();
+    }
+
+    function createParticles(direction) {
+      const container = document.getElementById('particleContainer');
+      const colors = direction === 'higher' ? ['#00ff99', '#00ccff'] : ['#ff0066', '#ffcc00'];
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = '50%';
+        p.style.top = '50%';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.boxShadow = `0 0 10px ${p.style.background}`;
+        const angle = (Math.PI * 2 * i) / 20;
+        const velocity = 100 + Math.random() * 100;
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+        container.appendChild(p);
+        let pos = 0;
+        let opacity = 1;
+        const anim = setInterval(() => {
+          pos += 5;
+          opacity -= 0.02;
+          p.style.transform = `translate(${vx * pos / 100}px, ${vy * pos / 100}px)`;
+          p.style.opacity = opacity;
+          if (opacity <= 0) {
+            clearInterval(anim);
+            p.remove();
+          }
+        }, 16);
+      }
+    }
+
+    function handleVictory() {
+      gameState.totalGames++;
+      let isBest = false;
+      if (gameState.bestScore === 0 || gameState.attempts < gameState.bestScore) {
+        gameState.bestScore = gameState.attempts;
+        isBest = true;
+      }
+      db.saveUser(gameState.username, {
+        games: gameState.totalGames,
+        best: gameState.bestScore,
+        lastPlayed: new Date().toISOString()
+      });
+      logStatus(`SUCCESS! NUMBER ${gameState.secretNumber} DECRYPTED`, 'success');
+      logStatus(`ATTEMPTS: ${gameState.attempts}${isBest ? ' (NEW RECORD)' : ''}`, 'success');
+      setTimeout(() => {
+        document.getElementById('finalAttempts').textContent = gameState.attempts;
+        document.getElementById('finalBest').textContent = gameState.bestScore;
+        document.getElementById('finalTotal').textContent = gameState.totalGames;
+        document.getElementById('victoryOverlay').classList.add('active');
+      }, 1000);
+    }
+
+    function resetSystem() {
+      document.getElementById('victoryOverlay').classList.remove('active');
+      startNewGame();
+      logStatus('SYSTEM REBOOT COMPLETE. NEW ENCRYPTION ACTIVE.');
+    }
+    document.getElementById('usernameInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') initSession();
+    });
+    document.getElementById('guessInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') processGuess();
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      logStatus('NEXUS QUANTUM SYSTEM v2.0.77');
+      logStatus('ESTABLISHING SECURE CONNECTION...');
+      setTimeout(() => {
+        logStatus('CONNECTION ESTABLISHED. READY.', 'success');
+      }, 800);
+    });
+  </script>
+</body>
+
+</html>
